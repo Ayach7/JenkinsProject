@@ -1,25 +1,34 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/Ayach7/JenkinsProject.git'
+                git branch: 'master', url: 'https://github.com/BoujnaneSalma/GestionDeProjet.git'
             }
         }
-        stage('Build') {
+        
+        stage('Restore Dependencies') {
             steps {
-                bat 'mvn clean install'
+                bat 'dotnet restore'
             }
         }
-        stage('Test') {
+        
+        stage('Build Project') {
             steps {
-                bat 'mvn test'
+                bat 'dotnet build --configuration Release'
             }
         }
-        stage('Deploy') {
+        
+        stage('Run Tests') {
             steps {
-                bat 'scp target/app.war user@remote-server:/path/to/deploy'
+                bat 'dotnet test'
+            }
+        }
+        
+        stage('Publish') {
+            steps {
+                bat 'dotnet publish --configuration Release'
             }
         }
     }
